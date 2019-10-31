@@ -17,7 +17,7 @@ Please install requirements by `pip install -r requirements.txt`
 + Feature Extractor : `VGG19` and `Resnet18` 
 + Generator Architecture : `Resnet`
 ```bash
-python gfmn.py --cuda   --netGType resnet  --netEncType vgg19 resnet18  --dataset cifar10 \
+python gfmn.py --netGType resnet  --netEncType vgg19 resnet18  --dataset cifar10 \
 --netEnc [path-to-pretrained-vgg19-model]  [path-to-pretrained-resnet18-model]
 ```
 `[path-to-pretrained-X-model]` : Path to pretrained VGG19/Resnet18 classifiers. Refer [downloads](#downloads) section.
@@ -26,8 +26,8 @@ python gfmn.py --cuda   --netGType resnet  --netEncType vgg19 resnet18  --datase
 + Feature Extractor : `VGG19` and `Resnet18` 
 + Generator Architecture : `Resnet`
 ```bash
-python gfmn.py --cuda   --netGType resnet --netEncType vgg19 resnet18  --dataset stl10 \
---netEnc [path-to-pretrained-vgg19-model]  [path-to-pretrained-resnet18-model]  --outf
+python gfmn.py --netGType resnet --netEncType vgg19 resnet18  --dataset stl10 \
+--netEnc [path-to-pretrained-vgg19-model]  [path-to-pretrained-resnet18-model]
 ```
 `[path-to-pretrained-X-model]` : Path to pretrained VGG19/Resnet18 classifiers. Refer [downloads](#downloads) section.
 
