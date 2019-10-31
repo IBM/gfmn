@@ -13,6 +13,7 @@
 Please install requirements by `pip install -r requirements.txt`
 
 ## Experiments
+
 ### Training a generator for CIFAR10
 + Feature Extractor : `VGG19` and `Resnet18` 
 + Generator Architecture : `Resnet`
@@ -21,6 +22,8 @@ python gfmn.py --netGType resnet  --netEncType vgg19 resnet18  --dataset cifar10
 --netEnc [path-to-pretrained-vgg19-model]  [path-to-pretrained-resnet18-model]
 ```
 `[path-to-pretrained-X-model]` : Path to pretrained VGG19/Resnet18 classifiers. Refer [downloads](#downloads) section.
+ 
+ ![figure](/images/cifar10_gen.png)
 
 ### Training a generator for STL10
 + Feature Extractor : `VGG19` and `Resnet18` 
@@ -30,6 +33,8 @@ python gfmn.py --netGType resnet --netEncType vgg19 resnet18  --dataset stl10 \
 --netEnc [path-to-pretrained-vgg19-model]  [path-to-pretrained-resnet18-model]
 ```
 `[path-to-pretrained-X-model]` : Path to pretrained VGG19/Resnet18 classifiers. Refer [downloads](#downloads) section.
+
+![figure](/images/stl10_gen.png)
 
 ## Downloads
 You can download pre-trained VGG19/Resnet18 classifiers from this [link](https://drive.google.com/drive/folders/1NJqVTEzfH0BQvvAZiqo-Nf2whbx3woIH?usp=sharing). These are the feature extractors we used in the above scripts to replicate the results, with `--netEnc` option. 
