@@ -42,7 +42,7 @@ You can download pre-trained VGG19/Resnet18 classifiers from this [link](https:/
 ## bibtex
 >  
     @InProceedings{Santos_2019_ICCV,
-    author = {Santos, Cicero Nogueira dos and Mroueh, Youssef and Padhi, Inkit and Dognin, Pierre},
+    author = {dos Santos, Cicero Nogueira and Mroueh, Youssef and Padhi, Inkit and Dognin, Pierre},
     title = {Learning Implicit Generative Models by Matching Perceptual Features},
     booktitle = {The IEEE International Conference on Computer Vision (ICCV)},
     month = {October},
