@@ -30,7 +30,7 @@ class VGG(nn.Module):
 
         if image_size % (2**num_M) == 0:
             # 32 -> 512 * 1 * 1, 64 -> 512 * 2 * 2, ..., 256 -> 512 * 7 * 7 
-            M = image_size / 2**num_M
+            M = int(image_size / 2**num_M) 
             logger.info("_make_classifier: {},{},{},{}".format(M, 512 * M * M, num_classes, classifier_depth))
             self.classifier = self._make_classifier(512 * M * M, num_classes, classifier_depth)
         else:
@@ -48,7 +48,7 @@ class VGG(nn.Module):
         out = self.classifier(out)
         if self.get_perceptual_feats:
             Out = []
-            for k, v in self.Out.iteritems():
+            for k, v in self.Out.items():
                 Out.append(v)
             Out.append(out)
             return out, Out

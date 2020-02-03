@@ -20,6 +20,7 @@ from models.vgg import VGG19
 from models.generators import DeconvDecoder, ConvEncoderSkipConnections, ResnetG
 from dataset import load_dataset
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', required=True, help='cifar10 | lsun | imagenet | folder | lfw | mnist | stl10', default='cifar10')
 parser.add_argument('--dataroot', required=True, help='path to dataset', default="./data/")
@@ -169,7 +170,7 @@ for netEncType in opt.netEncType:
         netEnc.append(ResNet18(get_perceptual_feats=True, num_classes=opt.numClassesInFtrExt, image_size=opt.imageSize))
         state = torch.load(opt.netEnc[curNetEncId])
         net = state['net']
-        netEnc[-1].load_state_dict(net.state_dict())
+        netEnc[-1].load_state_dict(net.state_dict(), strict=False)
 
     elif netEncType == 'vgg19':  # CIFAR-10 pretrained vgg19
         netEnc.append(VGG19(get_perceptual_feats=True, num_classes=opt.numClassesInFtrExt, image_size=opt.imageSize,
@@ -177,7 +178,7 @@ for netEncType in opt.netEncType:
         log.info("Reading Feat Exatractor #{} from {}".format(curNetEncId,opt.netEnc[curNetEncId]))
         state = torch.load(opt.netEnc[curNetEncId])
         net = state['net']
-        netEnc[-1].load_state_dict(net.state_dict())
+        netEnc[-1].load_state_dict(net.state_dict(), strict=False)
 
     else:
         netEnc.append(ConvEncoderSkipConnections(ngpu, nz, ndf, numberOfChannels=nc,
@@ -406,7 +407,7 @@ for iterId in range(opt.firstBatchId, niter):
         lossNetG = criterionL2Loss(movingAvrgMeanFakeData, globalFtrMeanValues.detach()) + \
                criterionL2Loss(movingAvrgVarFakeData, globalFtrVarValues.detach())
 
-        avrgLossNetGMean += lossNetG.data[0]
+        avrgLossNetGMean += lossNetG.item()
         lossNetG.backward()
         optimizerG.step()
 
@@ -417,7 +418,7 @@ for iterId in range(opt.firstBatchId, niter):
         diffFtrMeanTrueFake = globalFtrMeanValues.detach() - ftrsMeanFakeData.detach()
         lossNetMean = criterionL2Loss(netMean.weight, diffFtrMeanTrueFake.detach().view(1, -1))
         lossNetMean.backward()
-        avrgLossNetMean += lossNetMean.data[0]
+        avrgLossNetMean += lossNetMean.item()
         optimizerMean.step()
 
         # updates moving average of variance differences
@@ -425,7 +426,7 @@ for iterId in range(opt.firstBatchId, niter):
         diffFtrVarTrueFake = globalFtrVarValues.detach() - ftrsVarFakeData.detach()
         lossNetVar = criterionL2Loss(netVar.weight, diffFtrVarTrueFake.detach().view(1, -1))
         lossNetVar.backward()
-        avrgLossNetVar += lossNetVar.data[0]
+        avrgLossNetVar += lossNetVar.item()
         optimizerVar.step()
 
         # updates generator
@@ -435,10 +436,10 @@ for iterId in range(opt.firstBatchId, niter):
         varDiffXFakeVar   = netVar(ftrsVarFakeData.view(1, -1))
 
         lossNetGMean = (meanDiffXTrueMean - meanDiffXFakeMean)
-        avrgLossNetGMean += lossNetGMean.data[0]
+        avrgLossNetGMean += lossNetGMean.item()
 
         lossNetGVar = (varDiffXTrueVar - varDiffXFakeVar)
-        avrgLossNetGVar += lossNetGVar.data[0]
+        avrgLossNetGVar += lossNetGVar.item()
 
         lossNetG = lossNetGMean + lossNetGVar
         lossNetG.backward()
@@ -451,7 +452,7 @@ for iterId in range(opt.firstBatchId, niter):
                 curNetEnc.eval()
             netG.eval()
 
-        log.info('[{}/{}] Loss_Gz: {.6f} Loss_GzVar: {.6f} Loss_vMean: {.6f} Loss_vVar: {.6f}'.format
+        log.info('[{%d}/{%d}] Loss_Gz: %.6f Loss_GzVar: %.6f Loss_vMean: %.6f Loss_vVar: %.6f'%
                  (iterId + 1, niter,
                  avrgLossNetGMean / opt.numBatchsToValid, avrgLossNetGVar / opt.numBatchsToValid,
                  avrgLossNetMean / opt.numBatchsToValid, avrgLossNetVar / opt.numBatchsToValid))
