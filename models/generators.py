@@ -70,6 +70,47 @@ class DeconvDecoder(nn.Module):
             
         return output
 
+
+class ConvEncoderSkipConnectionBlock(nn.Module):
+    def __init__(self, dataForSkipConnections, submodule, blockId, input_nc, output_nc, useBatchNorm, nonLinearity='',
+                 filterSize=4, stride=2, padding=1, dropoutRate=0, useFCLayer=False):
+        super(ConvEncoderSkipConnectionBlock, self).__init__()
+
+        self._useFCLayer = useFCLayer
+        self._dataForSkipConnections = dataForSkipConnections
+
+        nnLayers = OrderedDict()
+
+        if submodule != None:
+            nnLayers["submodel"] = submodule
+
+        if self._useFCLayer:
+            nnLayers["fc_%d" % blockId] = nn.Linear(input_nc, output_nc, bias=True)
+        else:
+            nnLayers["conv_%d" % blockId] = nn.Conv2d(input_nc, output_nc, filterSize, stride, padding, bias=False)
+        if useBatchNorm:
+            nnLayers["btnConv_%d" % blockId] = nn.BatchNorm2d(output_nc)
+        if nonLinearity == 'tanh':
+            nnLayers["reluConv_%d" % blockId] = nn.Tanh()
+        elif nonLinearity == 'relu':
+            nnLayers["reluConv_%d" % blockId] = nn.ReLU(True)
+        elif nonLinearity == 'lrelu':
+            nnLayers["lreluConv_%d" % blockId] = nn.LeakyReLU(0.2, inplace=True)
+
+        if dropoutRate > 0:
+            nnLayers["dropout_%d" % blockId] = nn.Dropout(dropoutRate)
+
+        self.net = nn.Sequential(nnLayers)
+
+    def forward(self, input):
+        if self._useFCLayer:
+            output = self.net(input.view(input.size()[0], -1))
+            output = output.view(output.size()[0], output.size()[1], 1, 1)
+        else:
+            output = self.net(input)
+        self._dataForSkipConnections.append(output)
+        return output
+
 class ConvEncoderSkipConnections(nn.Module):
     
     def __init__(self, ngpu, encSize, ndf, numberOfChannels = 3, 
